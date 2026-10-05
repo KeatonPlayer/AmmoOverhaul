@@ -1,0 +1,48 @@
+name: C/C++ CI
+
+on:name: Build DiverseCasings
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows-x86:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure Win32
+        run: cmake -S . -B build -A Win32
+      - name: Compile
+        run: cmake --build build --config Release --parallel
+      - name: Test ammo snapshot queues
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Stage mod
+        run: cmake --install build --config Release --prefix dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DiverseCasings-Build1-Win32
+          path: dist/
+          if-no-files-found: error
+
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: configure
+      run: ./configure
+    - name: make
+      run: make
+    - name: make check
+      run: make check
+    - name: make distcheck
+      run: make distcheck
