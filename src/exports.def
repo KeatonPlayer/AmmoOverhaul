@@ -1,0 +1,4 @@
+LIBRARY DiverseCasings
+EXPORTS
+    NVSEPlugin_Query
+    NVSEPlugin_Load
